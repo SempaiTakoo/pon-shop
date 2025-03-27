@@ -1,0 +1,88 @@
+@startuml ecommerce_db_fixed
+
+entity users {
+  * user_id: bigint <<PK>>
+  --
+  * username: varchar(50)
+  * email: varchar(255) <<unique>>
+  * password_hash: varchar(255)
+  * role: enum('user', 'admin')
+  * created_at: timestamp
+}
+
+entity wishlists {
+  * wishlist_id: bigint <<PK>>
+  --
+  * user_id: bigint <<FK>>
+  * product_id: bigint <<FK>>
+  * added_at: timestamp
+}
+
+entity payment_methods {
+  * payment_id: bigint <<PK>>
+  --
+  * user_id: bigint <<FK>>
+  * type: enum('card', 'paypal', 'crypto')
+  * details: jsonb  -- Зашифрованные данные карты
+  * is_default: boolean
+}
+
+entity products {
+  * product_id: bigint <<PK>>
+  --
+  * seller_id: bigint <<FK>>
+  * title: varchar(255)
+  description: text
+  * price: decimal(12,2)
+  * quantity: int
+  * status: enum('active', 'sold')
+  * category_id: bigint <<FK>>
+}
+
+entity categories {
+  * category_id: bigint <<PK>>
+  * name: varchar(100)
+}
+
+entity orders {
+  * order_id: bigint <<PK>>
+  --
+  * product_id: bigint <<FK>>
+  * buyer_id: bigint <<FK>>
+  * quantity: int
+  * total_price: decimal(12,2)
+  * status: enum('pending', 'paid', 'shipped')
+  * created_at: timestamp
+}
+
+entity reviews {
+  * review_id: bigint <<PK>>
+  --
+  * product_id: bigint <<FK>>
+  * user_id: bigint <<FK>>
+  * rating: smallint
+  comment: text
+  * created_at: timestamp
+}
+
+entity analytics {
+  * id: bigint <<PK>>
+  --
+  * product_id: bigint <<FK>>
+  views: int
+  last_viewed: timestamp
+}
+
+' Связи
+users ||--o{ orders 
+users ||--o{ products
+products ||--o{ orders
+products ||--o{ reviews
+products ||--|| analytics
+users ||--o{ reviews
+users ||--o{ wishlists
+products ||--o{ wishlists
+users ||--|| payment_methods
+products ||--o{ categories
+
+@enduml
