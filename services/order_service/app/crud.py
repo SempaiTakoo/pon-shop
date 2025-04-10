@@ -5,15 +5,12 @@ from app.schemas import OrderCreate
 
 
 
-def create_order(order_data: OrderCreate, db: Session) -> Order:
-    
+def create_order(order_data: OrderCreate, db: Session):
     order_values = order_data.model_dump()
-
     db_order = Order(**order_values)
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
-    
     return db_order
 
 def get_orders(db: Session):
