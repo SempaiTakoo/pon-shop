@@ -1,10 +1,10 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
-from schemas import OrderCreate
-from database import SessionLocal, engine
+from app.database import SessionLocal, engine
 import uvicorn
-import crud as crud
-import models
+from app.schemas import OrderCreate
+import app.crud as crud
+import app.models as models
 
 models.Base.metadata.create_all(bind=engine)
 
