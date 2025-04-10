@@ -1,12 +1,12 @@
-from sqlalchemy import create_engine, text
-
-from config import settings
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
-engine = create_engine(url=settings.database_url_psycopg)
+class Base(DeclarativeBase):
+    pass
 
 
-def get_db_version() -> str:
-    with engine.connect() as conn:
-        res = conn.execute(text('SELECT VERSION()'))
-        return f'{res.first()[0]=}'
+class UserOrm(Base):
+    __tablename__ = "Users"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str]
