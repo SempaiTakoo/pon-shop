@@ -19,15 +19,11 @@ def create_order(order_data: OrderCreate, db: Session) -> Order:
 def get_orders(db: Session):
     return db.query(Order).all()
 
-#TODO
-'''
 def get_order(order_id: int, db: Session):
     return db.query(Order).filter(Order.order_id == order_id).first()
 
+def delete_order(order: Order, db: Session):
+    db.delete(order)
+    db.commit()
+    return order
 
-def get_orders_by_user(user_id: int, db: Session):
-    return db.query(Order).filter(Order.buyer_id == user_id).all()
-
-def get_user_order(user_id: int, order_id: int, db: Session):
-    return db.query(Order).filter(Order.order_id == order_id, Order.buyer_id == user_id).first()
-'''

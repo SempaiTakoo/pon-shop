@@ -39,6 +39,20 @@ def get_orders(db: Session = Depends(get_db)):
     orders = crud.get_orders(db)
     return orders
 
+@app.get("/orders/{id}", tags=["Заказы"], summary="Получить заказ")
+def get_order(id, db: Session = Depends(get_db)):
+    order = crud.get_order(id, db)
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказа нет")
+    return order
+
+@app.delete("/orders/{id}", tags=["Заказы"], summary="Удалить заказ")
+def delete_order(id, db: Session = Depends(get_db)):
+    order = crud.get_order(id, db)
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказа нет")
+    order = crud.delete_order(order, db)
+    return order
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
