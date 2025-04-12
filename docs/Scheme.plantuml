@@ -8,6 +8,7 @@ entity users {
   * password_hash: varchar(255)
   * role: enum('user', 'admin')
   * created_at: timestamp
+  * balance: int
 }
 
 entity wishlists {
@@ -15,17 +16,18 @@ entity wishlists {
   --
   * user_id: bigint <<FK>>
   * product_id: bigint <<FK>>
-  * added_at: timestamp
+  * created_at_at: timestamp
 }
 
-entity payment_methods {
-  * payment_id: bigint <<PK>>
-  --
-  * user_id: bigint <<FK>>
-  * type: enum('card', 'paypal', 'crypto')
-  * details: jsonb  -- Зашифрованные данные карты
-  * is_default: boolean
+entity replenishment {
+  * replenishment_id: bigint <<PK>>
+  -- 
+  user_id: bigint <<FK>>
+  replenishment_sum: int
+  payment_method: enum('card', 'СБП')
+  created_at: timestamp
 }
+
 
 entity products {
   * product_id: bigint <<PK>>
@@ -35,12 +37,19 @@ entity products {
   description: text
   * price: decimal(12,2)
   * quantity: int
-  * status: enum('active', 'sold')
+  * product_category_id: bigint <<FK>>
+}
+
+entity product_category {
+  * prod_cat_id: bigint <<PK>>
+  --
+  * product_id: bigint <<FK>>
   * category_id: bigint <<FK>>
 }
 
 entity categories {
   * category_id: bigint <<PK>>
+  --
   * name: varchar(100)
 }
 
@@ -82,7 +91,8 @@ products ||--|| analytics
 users ||--o{ reviews
 users ||--o{ wishlists
 products ||--o{ wishlists
-users ||--|| payment_methods
-products ||--o{ categories
+users ||--o{ replenishment
+products ||--o{ product_category
+categories ||--o{ product_category
 
 @enduml
