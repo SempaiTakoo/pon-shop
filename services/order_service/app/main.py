@@ -1,22 +1,16 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, engine
-import uvicorn
 from app.schemas import OrderCreate, OrderUpdate
+from app.database import get_db
 import app.crud as crud
 import app.models as models
+import uvicorn
+
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
 
 @app.get("/")
 def hello_index():
