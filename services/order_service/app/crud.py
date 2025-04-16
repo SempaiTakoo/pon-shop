@@ -1,9 +1,7 @@
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from app.models import Order
-from app.schemas import OrderCreate
-
-
+from app.schemas import OrderCreate, OrderUpdate
 
 def create_order(order_data: OrderCreate, db: Session):
     order_values = order_data.model_dump()
@@ -24,3 +22,10 @@ def delete_order(order: Order, db: Session):
     db.commit()
     return order
 
+def update_order(order: Order, order_data: OrderUpdate, db: Session):
+    update_data = order_data.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(order, key, value)
+    db.commit()
+    db.refresh(order)
+    return order

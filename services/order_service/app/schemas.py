@@ -3,7 +3,6 @@ from typing import Optional
 from datetime import datetime
 from enum import Enum
 
-
 class OrderStatusEnum(str, Enum):
     pending = "pending"
     paid = "paid"
@@ -18,3 +17,7 @@ class OrderBase(BaseModel):
 
 class OrderCreate(OrderBase):
     pass
+
+class OrderUpdate(OrderBase):
+    quantity: int | None = None
+    total_price: float | None = None

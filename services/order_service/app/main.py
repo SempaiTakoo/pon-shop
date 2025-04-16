@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal, engine
 import uvicorn
-from app.schemas import OrderCreate
+from app.schemas import OrderCreate, OrderUpdate
 import app.crud as crud
 import app.models as models
 
@@ -24,12 +24,11 @@ def hello_index():
         "message": "Hello",
     }
 
-
 @app.post("/orders/", tags=["Заказы"], summary="Создать заказ")
 def create_order(order: OrderCreate, db: Session = Depends(get_db)):
     try:
-        db_order = crud.create_order(order, db)
-        return db_order
+        order_db = crud.create_order(order, db)
+        return order_db
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -52,6 +51,14 @@ def delete_order(id, db: Session = Depends(get_db)):
     if not order:
         raise HTTPException(status_code=404, detail="Заказа нет")
     order = crud.delete_order(order, db)
+    return order
+
+@app.patch("/orders/{id}", tags=["Заказы"], summary="Обновить заказ")
+def update_order(id, order_data: OrderUpdate, db: Session = Depends(get_db)):
+    order = crud.get_order(id, db)
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказа нет")
+    order = crud.update_order(order, order_data, db)
     return order
 
 if __name__ == "__main__":
