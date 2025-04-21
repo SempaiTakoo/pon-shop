@@ -9,11 +9,11 @@ class OrderStatusEnum(str, Enum):
     shipped = "shipped"
 
 class OrderBase(BaseModel):
-    #product_id: int
-    #buyer_id: int
+    product_id: int
+    buyer_id: int
     quantity: int
     total_price: float
-    #status: OrderStatusEnum
+    status: OrderStatusEnum
 
 class OrderCreate(OrderBase):
     pass

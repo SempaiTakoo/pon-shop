@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from sqlalchemy.orm import Session
-from app.models import Order
-from app.schemas import OrderCreate, OrderUpdate
+from app.infrastructure.db.models import Order
+from app.api.schemas import OrderCreate, OrderUpdate
 
 def create_order(order_data: OrderCreate, db: Session):
     order_values = order_data.model_dump()

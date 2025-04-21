@@ -14,7 +14,6 @@ services:
       - "${DB_PORT}:5432"
 
   order_service:
-    network_mode: host
     build: .
     container_name: order_service
     restart: always
