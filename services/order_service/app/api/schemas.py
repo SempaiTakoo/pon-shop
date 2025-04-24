@@ -4,9 +4,9 @@ from datetime import datetime
 from enum import Enum
 
 class OrderStatusEnum(str, Enum):
-    pending = 'pending'
-    paid = 'paid'
-    shipped = 'shipped'
+    pending = "pending"
+    paid = "paid"
+    shipped = "shipped"
 
 class OrderBase(BaseModel):
     product_id: int
