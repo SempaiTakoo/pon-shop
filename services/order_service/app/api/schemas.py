@@ -4,9 +4,9 @@ from datetime import datetime
 from enum import Enum
 
 class OrderStatusEnum(str, Enum):
-    pending = "pending"
-    paid = "paid"
-    shipped = "shipped"
+    pending = 'pending'
+    paid = 'paid'
+    shipped = 'shipped'
 
 class OrderBase(BaseModel):
     product_id: int
@@ -18,6 +18,7 @@ class OrderBase(BaseModel):
 class OrderCreate(OrderBase):
     pass
 
-class OrderUpdate(OrderBase):
+class OrderUpdate(BaseModel):
     quantity: int | None = None
     total_price: float | None = None
+    status: OrderStatusEnum | None = None
