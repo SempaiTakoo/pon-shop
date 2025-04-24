@@ -18,12 +18,3 @@ class Order:
     total_price: float
     status: OrderStatus
     created_at: datetime
-
-    def update_status(self, new_status: OrderStatus):
-        self.status = new_status
-
-    def update_quantity(self, new_quantity: int):
-        self.quantity = new_quantity
-
-    def update_price(self, new_price: int):
-        self.price = new_price
