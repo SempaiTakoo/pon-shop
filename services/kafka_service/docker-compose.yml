@@ -1,6 +1,8 @@
 services:
   kafka:
     image: bitnami/kafka:latest
+    networks:
+      - kafka-net
     container_name: kafka
     ports:
       - "9092:9092"
@@ -19,3 +21,7 @@ services:
 
 volumes:
   kafka_data:
+
+networks:
+  kafka-net:
+    external: true
