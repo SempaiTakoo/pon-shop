@@ -52,3 +52,7 @@ volumes:
   postgres_data:
   redis_data:
   elasticsearch_data:
+
+networks:
+  kafka-net:
+    external: true

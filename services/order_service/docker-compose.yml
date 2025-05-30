@@ -31,3 +31,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  kafka-net:
+    external: true
