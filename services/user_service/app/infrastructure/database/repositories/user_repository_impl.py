@@ -1,7 +1,8 @@
+import datetime
 from sqlalchemy.orm import Session
 
 from app.domain.interfaces.user_repository import UserRepository
-from app.domain.models.user import User, UserToCreate, UserToUpdate
+from app.domain.models.user import User, UserRole, UserToCreate, UserToUpdate
 from app.infrastructure.database.mappers.user_mapper import orm_to_user
 from app.infrastructure.database.models.user import UserORM
 
@@ -16,8 +17,10 @@ class SQLAlchemyUserRepository(UserRepository):
         with self.session.begin():
             user_orm = UserORM(
                 username=user_to_create.username,
-                email=user_to_create.username,
+                email=user_to_create.email,
                 password_hash=user_to_create.password_hash,
+                role=UserRole.user,
+                created_at=datetime.datetime.now()
             )
             self.session.add(user_orm)
             self.session.flush()
@@ -50,6 +53,8 @@ class SQLAlchemyUserRepository(UserRepository):
     def delete(self, user_id: int) -> bool:
         with self.session.begin():
             user_orm = self.session.get(self.model_orm, user_id)
+            if not user_orm:
+                return False
             self.session.delete(user_orm)
             self.session.flush()
             return True

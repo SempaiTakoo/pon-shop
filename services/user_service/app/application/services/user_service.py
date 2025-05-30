@@ -24,4 +24,4 @@ class UserService:
         return self.user_repo.update(user_id, user_to_update)
 
     def delete(self, user_id: int) -> bool:
-        return self.delete(user_id)
+        return self.user_repo.delete(user_id)

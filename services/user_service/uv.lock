@@ -948,6 +948,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "alembic" },
+    { name = "email-validator" },
     { name = "fastapi", extra = ["standard"] },
     { name = "psycopg" },
     { name = "psycopg-binary" },
@@ -968,6 +969,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.15.2" },
+    { name = "email-validator", specifier = ">=2.2.0" },
     { name = "fastapi", extras = ["standard", "standart"], specifier = ">=0.115.12" },
     { name = "psycopg", specifier = ">=3.2.6" },
     { name = "psycopg-binary", specifier = ">=3.2.6" },

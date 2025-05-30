@@ -10,7 +10,7 @@ from app.api.v1.schemas.user import (
     UserUpdateRequest,
 )
 from app.application.services.user_service import UserService
-from app.domain.models.user import NewUser, UserToUpdate
+from app.domain.models.user import NewUser, User, UserToUpdate
 
 router = APIRouter()
 
@@ -23,7 +23,8 @@ def add_user(
     new_user = NewUser(
         username=user_in.username, email=user_in.email, password=user_in.password
     )
-    user = user_service.create_one(new_user)
+    user: User = user_service.create_one(new_user)
+    print(f'{user=}')
     return UserResponse.model_validate(user)
 
 
@@ -31,8 +32,10 @@ def add_user(
 def get_users(
     user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserListResponse:
-    users = user_service.get_all()
-    return UserListResponse.model_validate(users)
+    users: list[User] = user_service.get_all()
+    print(f'{users=}')
+    user_responses = [UserResponse.model_validate(user) for user in users]
+    return UserListResponse(users=user_responses)
 
 
 @router.get("/{user_id}")
