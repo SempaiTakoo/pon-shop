@@ -1,8 +1,8 @@
-version: '3.8'
-
 services:
   order_service_db:
     image: postgres:latest
+    networks:
+      - kafka-net
     container_name: order_service_db
     environment:
       POSTGRES_USER: ${DB_USER}
@@ -15,10 +15,12 @@ services:
 
   order_service:
     build: .
+    networks:
+      - kafka-net
     container_name: order_service
     restart: always
     depends_on:
-      - postgres
+      - order_service_db
     env_file:
       - .env
     ports:
