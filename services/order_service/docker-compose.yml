@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  postgres:
+  order_service_db:
     image: postgres:latest
-    container_name: postgres_db
+    container_name: order_service_db
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}

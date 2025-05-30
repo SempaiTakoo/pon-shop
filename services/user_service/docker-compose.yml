@@ -2,7 +2,7 @@
 services:
   user_service_db:
     image: postgres:latest
-    container_name: postgres_db
+    container_name: user_service_db
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -12,7 +12,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${DB_PORT}:5432"
+      - "${DB_PORT}:5433"
 
   user_service:
     build: .
