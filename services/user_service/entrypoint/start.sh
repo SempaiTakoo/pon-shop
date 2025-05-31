@@ -2,7 +2,7 @@
 
 until pg_isready -h user_service_db -p 5432; do
   echo "Waiting for Postgres..."
-  sleep 2
+  sleep 5
 done
 
 echo "Running migrations..."

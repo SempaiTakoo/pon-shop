@@ -13,7 +13,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${DB_PORT}:5433"
+      - "${DB_PORT}:5432"
 
   user_service:
     build: .
@@ -26,7 +26,7 @@ services:
     env_file:
       - .env
     ports:
-      - "8001:8000"
+      - "${PORT}:8000"
 
 volumes:
   pgdata:
