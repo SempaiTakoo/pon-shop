@@ -36,4 +36,6 @@ volumes:
 
 networks:
   kafka-net:
+    name: kafka-net
+    driver: bridge
     external: true
