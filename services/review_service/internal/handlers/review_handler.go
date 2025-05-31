@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"review-service/internal/models"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"review-service/internal/models"
 )
 
 type ReviewHandler struct {
@@ -90,7 +91,7 @@ func (h *ReviewHandler) GetAllReviews(c *gin.Context) {
 
 	h.DB.Model(&models.Review{}).Count(&total)
 	result := h.DB.Offset(offset).Limit(limit).Find(&reviews)
-	
+
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
 		return
