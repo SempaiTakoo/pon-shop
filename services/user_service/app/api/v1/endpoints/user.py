@@ -28,13 +28,6 @@ def add_user(
     return UserResponse.model_validate(user)
 
 
-def produce_to_kafka():
-    from kafka import KafkaProducer
-    producer = KafkaProducer(bootstrap_servers='kafka:9092')
-    topic = 'test'
-    producer.send(topic, b'some_message_bytes')
-
-
 @router.get("/")
 def get_users(
     user_service: Annotated[UserService, Depends(get_user_service)],
@@ -42,7 +35,6 @@ def get_users(
     users: list[User] = user_service.get_all()
     print(f'{users=}')
     user_responses = [UserResponse.model_validate(user) for user in users]
-    produce_to_kafka()
     return UserListResponse(users=user_responses)
 
 
@@ -53,6 +45,7 @@ def get_user(
     user = user_service.get_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден.")
+
     return UserResponse.model_validate(user)
 
 
