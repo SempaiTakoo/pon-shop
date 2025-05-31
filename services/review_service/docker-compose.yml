@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:14-alpine
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: reviews
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
@@ -18,9 +18,15 @@ services:
   review-service:
     build: .
     ports:
-      - "8080:8080"
+      - 8080:${SERVER_PORT}
     environment:
-      DB_HOST: postgres
+      SERVER_PORT: ${SERVER_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_SSL_MODE: ${DB_SSL_MODE}
     depends_on:
       postgres:
         condition: service_healthy

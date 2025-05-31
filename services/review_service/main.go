@@ -6,6 +6,7 @@ import (
 	"review-service/internal/handlers"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -16,6 +17,9 @@ import (
 // @BasePath        /
 
 func main() {
+	// Загружаем .env файл, если он существует
+	godotenv.Load()
+
 	db := database.InitDB()
 	reviewHandler := handlers.NewReviewHandler(db)
 

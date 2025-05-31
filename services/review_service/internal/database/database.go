@@ -2,14 +2,29 @@ package database
 
 import (
 	"fmt"
+	"os"
 	"review-service/internal/models"
-	
+
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func InitDB() *gorm.DB {
-	dsn := "host=postgres user=postgres password=postgres dbname=reviews port=5432 sslmode=disable"
+	// Загружаем .env файл, если существует
+	godotenv.Load()
+
+	// Получаем настройки подключения к БД из переменных окружения
+	host := getEnv("DB_HOST", "postgres")
+	port := getEnv("DB_PORT", "5432")
+	user := getEnv("DB_USER", "postgres")
+	password := getEnv("DB_PASSWORD", "postgres")
+	dbname := getEnv("DB_NAME", "reviews")
+	sslMode := getEnv("DB_SSL_MODE", "disable")
+
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+		host, user, password, dbname, port, sslMode)
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(fmt.Sprintf("Failed to connect to database: %v", err))
@@ -26,4 +41,13 @@ func InitDB() *gorm.DB {
 	`)
 
 	return db
+}
+
+// getEnv возвращает значение переменной окружения или значение по умолчанию
+func getEnv(key, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	return value
 }
