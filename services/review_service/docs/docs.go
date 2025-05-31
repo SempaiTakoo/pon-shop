@@ -65,7 +65,7 @@ const docTemplate = `{
                 "summary": "Create a new review",
                 "parameters": [
                     {
-                        "description": "Review data (без created_at, оно добавится автоматически)",
+                        "description": "Review data",
                         "name": "review",
                         "in": "body",
                         "required": true,
@@ -191,8 +191,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "created_at": {
-                    "type": "string",
-                    "example": "2006-01-02T15:04:05Z"
+                    "type": "string"
                 },
                 "product_id": {
                     "type": "integer"

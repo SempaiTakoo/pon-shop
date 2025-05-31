@@ -5,7 +5,6 @@ definitions:
       comment:
         type: string
       created_at:
-        example: "2006-01-02T15:04:05Z"
         type: string
       product_id:
         type: integer
@@ -52,7 +51,7 @@ paths:
       - application/json
       description: Create a new product review
       parameters:
-      - description: Review data (без created_at, оно добавится автоматически)
+      - description: Review data
         in: body
         name: review
         required: true
