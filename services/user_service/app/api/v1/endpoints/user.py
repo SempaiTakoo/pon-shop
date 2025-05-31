@@ -33,7 +33,6 @@ def get_users(
     user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserListResponse:
     users: list[User] = user_service.get_all()
-    print(f'{users=}')
     user_responses = [UserResponse.model_validate(user) for user in users]
     return UserListResponse(users=user_responses)
 
@@ -45,7 +44,6 @@ def get_user(
     user = user_service.get_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="Пользователь не найден.")
-
     return UserResponse.model_validate(user)
 
 
