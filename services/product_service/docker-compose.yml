@@ -3,6 +3,9 @@ version: '3.8'
 services:
   app:
     build: .
+    networks:
+      - local-net
+      - kafka-net
     ports:
       - "8000:8000"
     environment:
@@ -21,6 +24,8 @@ services:
       - ./alembic:/app/alembic
 
   db:
+    networks:
+      - local-net
     image: postgres:13-alpine
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -35,11 +40,15 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   redis:
+    networks:
+      - local-net
     image: redis:6-alpine
     volumes:
       - redis_data:/data
 
   elasticsearch:
+    networks:
+      - local-net
     image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
     environment:
       - discovery.type=single-node
@@ -58,3 +67,5 @@ networks:
     name: kafka-net
     driver: bridge
     external: true
+  local-net:
+    driver: bridge

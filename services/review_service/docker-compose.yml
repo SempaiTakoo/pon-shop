@@ -5,8 +5,8 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
-    ports:
-      - "5432:5432"
+    networks:
+      - local-net
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -17,8 +17,9 @@ services:
 
   review-service:
     build: .
-    ports:
-      - 8080:${SERVER_PORT}
+    networks:
+      - kafka-net
+      - local-net
     environment:
       SERVER_PORT: ${SERVER_PORT}
       DB_HOST: ${DB_HOST}
@@ -35,7 +36,9 @@ volumes:
   pgdata:
 
 networks:
-kafka-net:
-  name: kafka-net
-  driver: bridge
-  external: true
+  kafka-net:
+    name: kafka-net
+    driver: bridge
+    external: true
+  local-net:
+    driver: bridge
