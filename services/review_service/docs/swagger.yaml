@@ -1,0 +1,150 @@
+basePath: /
+definitions:
+  models.CreateReviewRequest:
+    properties:
+      comment:
+        type: string
+      product_id:
+        type: integer
+      rating:
+        maximum: 5
+        minimum: 1
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - rating
+    type: object
+  models.Review:
+    properties:
+      comment:
+        type: string
+      created_at:
+        type: string
+      product_id:
+        type: integer
+      rating:
+        type: integer
+      review_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: API для работы с отзывами на товары
+  title: Review Service API
+  version: "1.0"
+paths:
+  /reviews:
+    get:
+      description: Get list of reviews with pagination
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all reviews
+      tags:
+      - reviews
+    post:
+      consumes:
+      - application/json
+      description: Create a new product review
+      parameters:
+      - description: Review data
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateReviewRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Review'
+      summary: Create a new review
+      tags:
+      - reviews
+  /reviews/{id}:
+    delete:
+      description: Delete review by ID
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a review
+      tags:
+      - reviews
+    get:
+      description: Get review details by review ID
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Review'
+      summary: Get a review by ID
+      tags:
+      - reviews
+    put:
+      consumes:
+      - application/json
+      description: Update existing review by ID
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated review data
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/models.Review'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Review'
+      summary: Update a review
+      tags:
+      - reviews
+swagger: "2.0"
