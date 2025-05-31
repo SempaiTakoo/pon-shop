@@ -24,19 +24,34 @@ func NewReviewHandler(db *gorm.DB) *ReviewHandler {
 // @Tags reviews
 // @Accept json
 // @Produce json
-// @Param review body models.Review true "Review data"
+// @Param review body models.CreateReviewRequest true "Review data"
 // @Success 201 {object} models.Review
 // @Router /reviews [post]
 func (h *ReviewHandler) CreateReview(c *gin.Context) {
-	var review models.Review
-	if err := c.ShouldBindJSON(&review); err != nil {
+	var reviewRequest models.CreateReviewRequest
+	if err := c.ShouldBindJSON(&reviewRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if review.Rating < 1 || review.Rating > 5 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Rating must be between 1 and 5"})
+	// Проверяем обязательные поля
+	if reviewRequest.ProductID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "product_id is required and must be greater than 0"})
 		return
+	}
+
+	if reviewRequest.UserID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user_id is required and must be greater than 0"})
+		return
+	}
+
+	// Создаем объект Review на основе данных запроса
+	review := models.Review{
+		ProductID: reviewRequest.ProductID,
+		UserID:    reviewRequest.UserID,
+		Rating:    reviewRequest.Rating,
+		Comment:   reviewRequest.Comment,
+		// ReviewID и CreatedAt устанавливаются автоматически GORM и базой данных
 	}
 
 	if result := h.DB.Create(&review); result.Error != nil {

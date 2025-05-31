@@ -1,5 +1,20 @@
 basePath: /
 definitions:
+  models.CreateReviewRequest:
+    properties:
+      comment:
+        type: string
+      product_id:
+        type: integer
+      rating:
+        maximum: 5
+        minimum: 1
+        type: integer
+      user_id:
+        type: integer
+    required:
+    - rating
+    type: object
   models.Review:
     properties:
       comment:
@@ -56,7 +71,7 @@ paths:
         name: review
         required: true
         schema:
-          $ref: '#/definitions/models.Review'
+          $ref: '#/definitions/models.CreateReviewRequest'
       produces:
       - application/json
       responses:
