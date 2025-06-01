@@ -6,7 +6,9 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASS: str
     DB_NAME: str
-
+    KAFKA_BOOTSTRAP_SERVERS: str   
+    KAFKA_ORDER_TOPIC: str
+     
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -20,3 +22,5 @@ SQLALCHEMY_DATABASE_URL = (
     f"postgresql://{settings.DB_USER}:{settings.DB_PASS}"
     f"@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
 )
+
+

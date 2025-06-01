@@ -2,6 +2,7 @@ from app.domain.models.order import Order as DomainOrder
 from app.db.models import Order as ORMOrder
 from app.repository.order import OrderRepository
 from app.api.schemas import OrderCreate, OrderUpdate
+from app.kafka.producer import send_order_event
 
 def to_domain(orm: ORMOrder):
     return DomainOrder(
@@ -9,7 +10,6 @@ def to_domain(orm: ORMOrder):
         buyer_id=orm.buyer_id,
         product_id=orm.product_id,
         quantity=orm.quantity,
-        total_price=orm.total_price,
         status=orm.status,
         created_at=orm.created_at
     )
@@ -30,13 +30,24 @@ class OrderService:
     
     def add_order(self, order: OrderCreate):
         orm_order = ORMOrder(
-        product_id=order.product_id,
-        buyer_id=order.buyer_id,
-        quantity=order.quantity,
-        total_price=order.total_price,
-        status=order.status
+            product_id=order.product_id,
+            buyer_id=order.buyer_id,
+            quantity=order.quantity,
+            status=order.status
         )
-        return to_domain(self.repo.add(orm_order))
+        created_order = self.repo.add(orm_order)
+
+        event = {
+            "event": "order_created",
+            "data": {
+                "order_id": created_order.order_id,
+                "product_id": created_order.product_id,
+                "quantity": created_order.quantity
+            }
+        }
+        send_order_event(event)
+
+        return to_domain(created_order)
     
     def update_order(self, order_id: int, data: OrderUpdate):
         return to_domain(self.repo.update(order_id, data.model_dump()))
