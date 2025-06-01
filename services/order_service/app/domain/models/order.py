@@ -15,6 +15,5 @@ class Order:
     product_id: int
     buyer_id: int
     quantity: int
-    total_price: float
     status: OrderStatus
     created_at: datetime

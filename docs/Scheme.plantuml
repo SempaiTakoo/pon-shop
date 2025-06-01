@@ -59,7 +59,6 @@ entity orders {
   * product_id: bigint <<FK>>
   * buyer_id: bigint <<FK>>
   * quantity: int
-  * total_price: decimal(12,2)
   * status: enum('pending', 'paid', 'shipped')
   * created_at: timestamp
 }
