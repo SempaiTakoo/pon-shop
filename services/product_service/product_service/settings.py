@@ -83,6 +83,8 @@ DATABASES = {
     }
 }
 
+KAFKA_BOOTSTRAP_SERVERS = 'kafka:9092'
+KAFKA_ORDER_TOPIC = 'order_service_logs'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
