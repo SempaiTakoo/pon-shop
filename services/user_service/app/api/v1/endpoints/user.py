@@ -15,7 +15,7 @@ from app.domain.models.user import NewUser, User, UserToUpdate
 router = APIRouter()
 
 
-@router.post("/")
+@router.post('/')
 def add_user(
     user_in: UserCreateRequest,
     user_service: Annotated[UserService, Depends(get_user_service)],
@@ -28,7 +28,7 @@ def add_user(
     return UserResponse.model_validate(user)
 
 
-@router.get("/")
+@router.get('/')
 def get_users(
     user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> UserListResponse:
@@ -37,17 +37,17 @@ def get_users(
     return UserListResponse(users=user_responses)
 
 
-@router.get("/{user_id}")
+@router.get('/{user_id}')
 def get_user(
     user_id: int, user_service: Annotated[UserService, Depends(get_user_service)]
 ) -> UserResponse | None:
     user = user_service.get_by_id(user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден.")
+        raise HTTPException(status_code=404, detail='Пользователь не найден.')
     return UserResponse.model_validate(user)
 
 
-@router.patch("/{user_id}")
+@router.patch('/{user_id}')
 def update_user(
     user_id: int,
     user_in: UserUpdateRequest,
@@ -56,15 +56,15 @@ def update_user(
     user_to_update = UserToUpdate(username=user_in.username, email=user_in.email)
     user = user_service.update(user_id, user_to_update)
     if not user:
-        raise HTTPException(status_code=404, detail="Пользователь не найден.")
+        raise HTTPException(status_code=404, detail='Пользователь не найден.')
     return UserResponse.model_validate(user)
 
 
-@router.delete("/{user_id}")
+@router.delete('/{user_id}')
 def delete_user(
     user_id: int, user_service: Annotated[UserService, Depends(get_user_service)]
 ) -> dict[str, str] | None:
     is_deleted = user_service.delete(user_id)
     if not is_deleted:
-        raise HTTPException(status_code=404, detail="Пользователь не найден.")
-    return {"message": f"Пользователь с id {user_id} был удалён"}
+        raise HTTPException(status_code=404, detail='Пользователь не найден.')
+    return {'message': f'Пользователь с id {user_id} был удалён'}

@@ -6,8 +6,10 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "alembic>=1.15.2",
+    "confluent-kafka-python>=0.0.2",
     "email-validator>=2.2.0",
     "fastapi[standard,standart]>=0.115.12",
+    "kafka-python>=2.2.10",
     "psycopg>=3.2.6",
     "psycopg-binary>=3.2.6",
     "pydantic>=2.11.1",
