@@ -30,6 +30,13 @@ definitions:
       user_id:
         type: integer
     type: object
+  models.User:
+    properties:
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
 info:
   contact: {}
   description: API для работы с отзывами на товары
@@ -147,4 +154,72 @@ paths:
       summary: Update a review
       tags:
       - reviews
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Получает информацию о пользователе по его ID
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получение информации о пользователе
+      tags:
+      - users
+  /users/{id}/username:
+    get:
+      consumes:
+      - application/json
+      description: Получает имя пользователя по его ID
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получение имени пользователя
+      tags:
+      - users
 swagger: "2.0"

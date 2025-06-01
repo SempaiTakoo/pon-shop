@@ -30,7 +30,8 @@ func InitDB() *gorm.DB {
 		panic(fmt.Sprintf("Failed to connect to database: %v", err))
 	}
 
-	db.AutoMigrate(&models.Review{})
+	// Миграция таблицы отзывов и пользователей
+	db.AutoMigrate(&models.Review{}, &models.User{})
 
 	db.Exec(`
 		DO $$ BEGIN
