@@ -58,11 +58,6 @@ func NewProducer() (*Producer, error) {
 		log.Printf("Хост %s разрешается в IP: %v", host, ips)
 	}
 
-	// Создаем директорию для информации о топиках
-	err = createTopicIfNotExists(kafkaBroker, topic)
-	if err != nil {
-		log.Printf("Ошибка при создании топика: %v. Продолжаем работу...", err)
-	}
 
 	// Создаем writer для Kafka
 	writer := &kafka.Writer{
@@ -79,40 +74,6 @@ func NewProducer() (*Producer, error) {
 	}, nil
 }
 
-// createTopicIfNotExists создает топик если он не существует
-func createTopicIfNotExists(broker, topicName string) error {
-	conn, err := kafka.Dial("tcp", broker)
-	if err != nil {
-		return fmt.Errorf("невозможно подключиться к %s: %w", broker, err)
-	}
-	defer conn.Close()
-
-	controller, err := conn.Controller()
-	if err != nil {
-		return fmt.Errorf("невозможно получить контроллер: %w", err)
-	}
-
-	controllerConn, err := kafka.Dial("tcp", net.JoinHostPort(controller.Host, fmt.Sprintf("%d", controller.Port)))
-	if err != nil {
-		return fmt.Errorf("невозможно подключиться к контроллеру %s:%d: %w", controller.Host, controller.Port, err)
-	}
-	defer controllerConn.Close()
-
-	// Проверяем наличие топика
-	partitions, err := conn.ReadPartitions(topicName)
-	if err == nil && len(partitions) > 0 {
-		log.Printf("Топик %s уже существует", topicName)
-		return nil
-	}
-
-	// Создаем топик если не существует
-	log.Printf("Создаем топик %s", topicName)
-	return controllerConn.CreateTopics(kafka.TopicConfig{
-		Topic:             topicName,
-		NumPartitions:     1,
-		ReplicationFactor: 1,
-	})
-}
 
 // PublishReviewCreated публикует событие о создании отзыва
 func (p *Producer) PublishReviewCreated(ctx context.Context, review interface{}) error {
