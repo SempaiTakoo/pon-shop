@@ -2,7 +2,11 @@ from django.http import JsonResponse
 from django.views import View
 import json
 from .services import ProductService
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.forms.models import model_to_dict
 
+@method_decorator(csrf_exempt, name='dispatch')
 class ProductView(View):
     def get(self, request, product_id=None):
         if product_id:
