@@ -4,6 +4,12 @@ services:
     networks:
       - local-net
     container_name: user_service_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -21,7 +27,8 @@ services:
     container_name: user_service
     restart: always
     depends_on:
-      - user_service_db
+      user_service_db:
+        condition: service_healthy
     env_file:
       - .env
     ports:

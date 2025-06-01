@@ -1,10 +1,6 @@
 #!/bin/sh
 
-until pg_isready -h user_service_db -p 5432; do
-  echo "Waiting for Postgres..."
-  sleep 5
-done
-
+# База данных уже должна быть готова благодаря healthcheck в docker-compose
 echo "Running migrations..."
 alembic upgrade head
 
