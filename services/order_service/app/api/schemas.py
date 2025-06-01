@@ -9,14 +9,14 @@ class OrderStatusEnum(str, Enum):
     shipped = "shipped"
 
 class OrderBase(BaseModel):
-    product_id: int
-    buyer_id: int
-    quantity: int
+    product_id: int = Field(..., gt=0)
+    buyer_id: int = Field(..., gt=0)
+    quantity: int = Field(..., gt=0)
     status: OrderStatusEnum
 
 class OrderCreate(OrderBase):
     pass
 
 class OrderUpdate(BaseModel):
-    quantity: int | None = None
-    status: OrderStatusEnum | None = None
+    quantity: Optional[int] = Field(None, gt=0, description="New quantity, must be > 0")
+    status: Optional[OrderStatusEnum] = Field(None, description="New order status")

@@ -50,8 +50,27 @@ class OrderService:
         return to_domain(created_order)
     
     def update_order(self, order_id: int, data: OrderUpdate):
-        return to_domain(self.repo.update(order_id, data.model_dump()))
-    
-    def delete_order(self, order_id: int):
-        self.repo.delete(order_id)
+        updated_order = self.repo.update(order_id, data.model_dump())
+        event = {
+            "event": "order_updated",
+            "data": {
+                "order_id": updated_order.order_id,
+                "product_id": updated_order.product_id,
+                "quantity": updated_order.quantity,
+                "status": updated_order.status,
+            }
+        }
+        send_order_event(event)
+        return to_domain(updated_order)
 
+    def delete_order(self, order_id: int):
+        order = self.repo.get_by_id(order_id)
+        if order:
+            event = {
+                "event": "order_deleted",
+                "data": {
+                    "order_id": order.order_id
+                }
+            }
+            send_order_event(event)
+        self.repo.delete(order_id)
