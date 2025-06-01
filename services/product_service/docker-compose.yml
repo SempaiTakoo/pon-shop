@@ -33,6 +33,23 @@ services:
       db:
         condition: service_healthy
 
+  consumer:
+    container_name: product_service_consumer
+    build: .
+    depends_on:
+      - db
+      - web
+    networks:
+      - kafka-net
+      - local-net
+    command: sh -c "sleep 10 && python products/kafka/consumer.py"
+    healthcheck:
+      test: [ "CMD-SHELL", "pgrep -f run_consumer || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
 volumes:
   postgres_data:
 
