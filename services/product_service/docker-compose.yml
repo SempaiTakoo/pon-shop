@@ -3,6 +3,7 @@ version: '3.9'
 services:
 
   db:
+    container_name: product_service_db
     networks:
       - local-net
     image: postgres:14
@@ -21,13 +22,14 @@ services:
 
 
   web:
+    container_name: product_service_web
     networks:
       - local-net
       - kafka-net
     build: .
-    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8003"
     ports:
-      - "8003:8000"
+      - "8003:8003"
     depends_on:
       - db
 
