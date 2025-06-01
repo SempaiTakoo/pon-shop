@@ -42,7 +42,9 @@ class OrderService:
             "data": {
                 "order_id": created_order.order_id,
                 "product_id": created_order.product_id,
-                "quantity": created_order.quantity
+                "buyer_id": created_order.buyer_id,
+                "quantity": created_order.quantity,
+                "status": created_order.status
             }
         }
         send_order_event(event)
@@ -56,8 +58,9 @@ class OrderService:
             "data": {
                 "order_id": updated_order.order_id,
                 "product_id": updated_order.product_id,
+                "buyer_id": updated_order.buyer_id,
                 "quantity": updated_order.quantity,
-                "status": updated_order.status,
+                "status": updated_order.status
             }
         }
         send_order_event(event)
