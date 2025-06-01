@@ -27,6 +27,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       DB_SSL_MODE: ${DB_SSL_MODE}
+      KAFKA_BROKER: kafka:9092
     ports:
       - "8002:8080"
     depends_on:

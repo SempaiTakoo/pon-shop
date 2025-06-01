@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 
+	"review-service/internal/kafka"
 	"review-service/internal/models"
 
 	"github.com/gin-gonic/gin"
@@ -11,11 +13,15 @@ import (
 )
 
 type ReviewHandler struct {
-	DB *gorm.DB
+	DB       *gorm.DB
+	Producer *kafka.Producer
 }
 
-func NewReviewHandler(db *gorm.DB) *ReviewHandler {
-	return &ReviewHandler{DB: db}
+func NewReviewHandler(db *gorm.DB, producer *kafka.Producer) *ReviewHandler {
+	return &ReviewHandler{
+		DB:       db,
+		Producer: producer,
+	}
 }
 
 // CreateReview godoc
@@ -57,6 +63,12 @@ func (h *ReviewHandler) CreateReview(c *gin.Context) {
 	if result := h.DB.Create(&review); result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
 		return
+	}
+
+	// Отправляем событие о создании отзыва в Kafka
+	if err := h.Producer.PublishReviewCreated(c.Request.Context(), review); err != nil {
+		// Логируем ошибку, но не останавливаем выполнение
+		c.Error(err)
 	}
 
 	c.JSON(http.StatusCreated, review)
@@ -160,6 +172,15 @@ func (h *ReviewHandler) UpdateReview(c *gin.Context) {
 		Comment: updateData.Comment,
 	})
 
+	// Получаем обновленный отзыв
+	h.DB.First(&existingReview, id)
+
+	// Отправляем событие об обновлении отзыва в Kafka
+	if err := h.Producer.PublishReviewUpdated(c.Request.Context(), existingReview); err != nil {
+		// Логируем ошибку, но не останавливаем выполнение
+		c.Error(err)
+	}
+
 	c.JSON(http.StatusOK, existingReview)
 }
 
@@ -178,15 +199,23 @@ func (h *ReviewHandler) DeleteReview(c *gin.Context) {
 		return
 	}
 
+	// Проверяем существование отзыва перед удалением
+	var review models.Review
+	if result := h.DB.First(&review, id); result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Review not found"})
+		return
+	}
+
 	result := h.DB.Delete(&models.Review{}, id)
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error.Error()})
 		return
 	}
 
-	if result.RowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Review not found"})
-		return
+	// Отправляем событие об удалении отзыва в Kafka
+	if err := h.Producer.PublishReviewDeleted(context.Background(), id); err != nil {
+		// Логируем ошибку, но не останавливаем выполнение
+		c.Error(err)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Review deleted successfully"})

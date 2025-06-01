@@ -1,9 +1,11 @@
 package main
 
 import (
+	"log"
 	_ "review-service/docs" // Импорт сгенерированных Swagger-документов
 	"review-service/internal/database"
 	"review-service/internal/handlers"
+	"review-service/internal/kafka"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -20,8 +22,18 @@ func main() {
 	// Загружаем .env файл, если он существует
 	godotenv.Load()
 
+	// Инициализируем подключение к базе данных
 	db := database.InitDB()
-	reviewHandler := handlers.NewReviewHandler(db)
+
+	// Инициализируем Kafka продюсер
+	producer, err := kafka.NewProducer()
+	if err != nil {
+		log.Fatalf("Failed to create Kafka producer: %v", err)
+	}
+	defer producer.Close()
+
+	// Инициализируем обработчики с доступом к БД и Kafka
+	reviewHandler := handlers.NewReviewHandler(db, producer)
 
 	router := gin.Default()
 
