@@ -19,10 +19,10 @@ consumer = KafkaConsumer(
     value_deserializer=lambda m: json.loads(m.decode('utf-8')),
 )
 
-print("🟢 Kafka consumer ждёт сообщений...", flush=True)
+print("Kafka consumer ждёт сообщений...", flush=True)
 
 for message in consumer:
-    print(f"📦 Получено сообщение: {message.value}", flush=True)
+    print(f"Получено сообщение: {message.value}", flush=True)
     event = message.value
     data = event.get('data')
 
@@ -33,6 +33,6 @@ for message in consumer:
         product = Product.objects.get(product_id=product_id)
         product.quantity = max(product.quantity - qty_ordered, 0)
         product.save()
-        print(f"✅ Обновлён товар {product_id}: осталось {product.quantity}", flush=True)
+        print(f"Обновлён товар {product_id}: осталось {product.quantity}", flush=True)
     except Product.DoesNotExist:
-        print(f"⚠️ Товар с ID {product_id} не найден.", flush=True)
+        print(f"Товар с ID {product_id} не найден.", flush=True)
