@@ -12,7 +12,6 @@ class OrderBase(BaseModel):
     product_id: int
     buyer_id: int
     quantity: int
-    total_price: float
     status: OrderStatusEnum
 
 class OrderCreate(OrderBase):
@@ -20,5 +19,4 @@ class OrderCreate(OrderBase):
 
 class OrderUpdate(BaseModel):
     quantity: int | None = None
-    total_price: float | None = None
     status: OrderStatusEnum | None = None
