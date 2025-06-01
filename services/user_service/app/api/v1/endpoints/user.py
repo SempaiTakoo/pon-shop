@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
 
 from app.api.v1.endpoints.dependencies import get_user_service
 from app.api.v1.schemas.user import (
@@ -11,6 +12,8 @@ from app.api.v1.schemas.user import (
 )
 from app.application.services.user_service import UserService
 from app.domain.models.user import NewUser, User, UserToUpdate
+from app.infrastructure.database.session import get_db
+from app.infrastructure.database.models.user import UserReviewCountORM
 
 router = APIRouter()
 
@@ -68,3 +71,11 @@ def delete_user(
     if not is_deleted:
         raise HTTPException(status_code=404, detail='Пользователь не найден.')
     return {'message': f'Пользователь с id {user_id} был удалён'}
+
+
+@router.get('/{user_id}/review_count')
+def get_review_count(
+    user_id: int, db: Annotated[Session, Depends(get_db)]
+):
+    obj = db.get(UserReviewCountORM, user_id)
+    return {"user_id": user_id, "review_count": obj.review_count if obj else 0}

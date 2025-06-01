@@ -18,3 +18,10 @@ class UserORM(Base):
     password_hash: Mapped[str]
     role: Mapped[UserRole]
     created_at: Mapped[datetime]
+
+
+class UserReviewCountORM(Base):
+    __tablename__ = "UserReviewCount"
+
+    user_id: Mapped[int] = mapped_column(primary_key=True)
+    review_count: Mapped[int] = mapped_column(default=0)
