@@ -58,8 +58,15 @@ class UserService:
         updated_user = self.user_repo.update(user_id, user_to_update)
         if updated_user:
             self.logger.log(
-                event='UPDATE',
-                data={'user_id': user_id}
+            event='CREATE',
+            data={
+                    'user': {
+                        'updated_user.id': updated_user.id,
+                        'updated_user.username': updated_user.username,
+                        'updated_user.role': updated_user.role,
+                        'updated_user.email': updated_user.email
+                    }
+                }
             )
         return updated_user
 
