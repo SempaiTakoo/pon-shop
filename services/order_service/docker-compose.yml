@@ -36,6 +36,22 @@ services:
     command: >
       sh -c "sleep 5 &&
              uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+  order_consumer:
+    build: .
+    container_name: order_service_consumer
+    networks:
+      - kafka-net
+      - local-net
+    depends_on:
+      - order_service_db
+      - order_service
+    command: >
+      sh -c "sleep 10 && python app/kafka/consumer.py"
+    healthcheck:
+      test: [ "CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
 volumes:
   pgdata:

@@ -10,6 +10,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'product_service.settings')
 django.setup()
 
 from products.models import Product
+from products.kafka.producer import send_product_price
+
 consumer = KafkaConsumer(
     'order_service_logs',
     bootstrap_servers='kafka:9092',
@@ -23,16 +25,26 @@ print("Kafka consumer ждёт сообщений...", flush=True)
 
 for message in consumer:
     print(f"Получено сообщение: {message.value}", flush=True)
-    event = message.value
-    data = event.get('data')
-
-    product_id = data['product_id']
-    qty_ordered = data['quantity']
-
+    data = message.value["data"]
+    product_id = data["product_id"]
+    quantity = data["quantity"]
+    order_id = data["order_id"]
     try:
         product = Product.objects.get(product_id=product_id)
-        product.quantity = max(product.quantity - qty_ordered, 0)
-        product.save()
-        print(f"Обновлён товар {product_id}: осталось {product.quantity}", flush=True)
+        if product.quantity >= quantity:
+            product.quantity -= quantity
+            product.save()
+
+            print(f"Обновлено количество товара {product_id}, теперь: {product.quantity}", flush=True)
+            send_product_price({
+                "order_id": order_id,
+                "product_id": product.product_id,
+                "price": float(product.price)
+            })         # 👈 отправка обратно
+        else:
+            print(f"Недостаточно товара {product_id}, доступно: {product.quantity}", flush=True)
+
     except Product.DoesNotExist:
-        print(f"Товар с ID {product_id} не найден.", flush=True)
+        print(f"❌ Продукт с id={product_id} не найден.", flush=True)
+    except Exception as e:
+        print(f"⚠️ Ошибка обработки сообщения: {e}", flush=True)
