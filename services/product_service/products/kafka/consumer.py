@@ -40,11 +40,11 @@ for message in consumer:
                 "order_id": order_id,
                 "product_id": product.product_id,
                 "price": float(product.price)
-            })         # 👈 отправка обратно
+            })
         else:
             print(f"Недостаточно товара {product_id}, доступно: {product.quantity}", flush=True)
 
     except Product.DoesNotExist:
-        print(f"❌ Продукт с id={product_id} не найден.", flush=True)
+        print(f"Продукт с id={product_id} не найден.", flush=True)
     except Exception as e:
-        print(f"⚠️ Ошибка обработки сообщения: {e}", flush=True)
+        print(f"Ошибка обработки сообщения: {e}", flush=True)
