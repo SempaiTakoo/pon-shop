@@ -13,7 +13,6 @@ producer = KafkaProducer(
 )
 
 def send_order_event(event: dict, key: str = "order_created"):
-    """Отправляет событие заказа в Kafka."""
     try:
         producer.send(KAFKA_TOPIC, key=key, value=event)
         producer.flush()

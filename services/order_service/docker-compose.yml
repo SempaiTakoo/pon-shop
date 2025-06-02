@@ -46,7 +46,7 @@ services:
       - order_service_db
       - order_service
     command: >
-      sh -c "sleep 10 && python app/kafka/consumer.py"
+      sh -c "sleep 10 && python -m app.kafka.consumer"
     healthcheck:
       test: [ "CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list" ]
       interval: 10s

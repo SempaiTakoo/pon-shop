@@ -18,5 +18,14 @@ class OrderCreate(OrderBase):
     pass
 
 class OrderUpdate(BaseModel):
-    quantity: Optional[int] = Field(None, gt=0, description="New quantity, must be > 0")
-    status: Optional[OrderStatusEnum] = Field(None, description="New order status")
+    quantity: Optional[int] = Field(None, gt=0)
+    status: Optional[OrderStatusEnum] = Field(None)
+
+
+class OrderResponse(OrderBase):
+    order_id: int
+    total_price: float
+    created_at: datetime
+
+    class Config:
+        orm_mode = True

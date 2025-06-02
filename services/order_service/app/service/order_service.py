@@ -10,6 +10,7 @@ def to_domain(orm: ORMOrder):
         buyer_id=orm.buyer_id,
         product_id=orm.product_id,
         quantity=orm.quantity,
+        total_price=float(orm.total_price) if orm.total_price is not None else 0.0,
         status=orm.status,
         created_at=orm.created_at
     )
@@ -33,7 +34,8 @@ class OrderService:
             product_id=order.product_id,
             buyer_id=order.buyer_id,
             quantity=order.quantity,
-            status=order.status
+            status=order.status,
+            total_price=None
         )
         created_order = self.repo.add(orm_order)
 
