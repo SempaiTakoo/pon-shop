@@ -24,10 +24,17 @@ type UserEvent struct {
 	Event string `json:"event"`
 	Data  struct {
 		User struct {
+			// Поля для события CREATE
 			ID       int    `json:"created_user.id"`
 			Username string `json:"created_user.username"`
 			Role     string `json:"created_user.role"`
 			Email    string `json:"created_user.email"`
+
+			// Поля для события UPDATE
+			UpdatedID       int    `json:"updated_user.id"`
+			UpdatedUsername string `json:"updated_user.username"`
+			UpdatedRole     string `json:"updated_user.role"`
+			UpdatedEmail    string `json:"updated_user.email"`
 		} `json:"user"`
 		UserID int `json:"user_id"`
 		Count  int `json:"count"`
@@ -145,7 +152,7 @@ func (c *Consumer) processMessage(msg kafka.Message) error {
 
 	case "UPDATE":
 		// Обрабатываем событие обновления пользователя
-		if event.Data.UserID > 0 {
+		if event.Data.User.UpdatedID > 0 {
 			return c.handleUpdateEvent(event)
 		}
 
@@ -208,24 +215,47 @@ func (c *Consumer) handleCreateEvent(event UserEvent) error {
 
 // handleUpdateEvent обрабатывает событие UPDATE
 func (c *Consumer) handleUpdateEvent(event UserEvent) error {
-	userID := uint64(event.Data.UserID)
-	log.Printf("Обработка события UPDATE для пользователя ID: %d", userID)
+	userID := uint64(event.Data.User.UpdatedID)
+	username := event.Data.User.UpdatedUsername
 
-	// Проверяем, существует ли пользователь
+	log.Printf("Обработка события UPDATE для пользователя ID: %d, новое Username: %s",
+		userID, username)
+
+	// Сначала проверим, существует ли пользователь
 	var user models.User
 	result := c.db.Where("user_id = ?", userID).First(&user)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			log.Printf("Пользователь с ID %d не найден при обработке события UPDATE", userID)
-			return nil // Не считаем это ошибкой, просто логируем
+			// Пользователь не найден, создаем новую запись
+			log.Printf("Пользователь с ID %d не найден, создаем новую запись", userID)
+			newUser := models.User{
+				UserID:   userID,
+				Username: username,
+			}
+			result = c.db.Create(&newUser)
+			if result.Error != nil {
+				return fmt.Errorf("ошибка при создании пользователя: %w", result.Error)
+			}
+			log.Printf("Создан новый пользователь с ID %d", userID)
+		} else {
+			return fmt.Errorf("ошибка при поиске пользователя для обновления: %w", result.Error)
 		}
-		return fmt.Errorf("ошибка при поиске пользователя для обновления: %w", result.Error)
+	} else {
+		// Пользователь существует, обновляем его данные
+		if user.Username != username {
+			log.Printf("Обновление имени пользователя с ID %d с '%s' на '%s'",
+				userID, user.Username, username)
+			user.Username = username
+			result = c.db.Save(&user)
+			if result.Error != nil {
+				return fmt.Errorf("ошибка при обновлении пользователя: %w", result.Error)
+			}
+			log.Printf("Пользователь с ID %d успешно обновлен", userID)
+		} else {
+			log.Printf("Данные пользователя с ID %d не изменились, обновление не требуется", userID)
+		}
 	}
 
-	// В текущей версии события UPDATE не содержат новых данных пользователя
-	// Здесь можно добавить обработку других данных, если они будут в будущем
-
-	log.Printf("Пользователь с ID %d существует, событие UPDATE обработано", userID)
 	return nil
 }
 
