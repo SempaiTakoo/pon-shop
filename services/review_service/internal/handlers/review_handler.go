@@ -51,6 +51,17 @@ func (h *ReviewHandler) CreateReview(c *gin.Context) {
 		return
 	}
 
+	// Проверяем существование пользователя
+	var user models.User
+	if result := h.DB.Where("user_id = ?", reviewRequest.UserID).First(&user); result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error checking user existence"})
+		}
+		return
+	}
+
 	// Создаем объект Review на основе данных запроса
 	review := models.Review{
 		ProductID: reviewRequest.ProductID,
@@ -96,7 +107,32 @@ func (h *ReviewHandler) GetReview(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, review)
+	// Получаем информацию о пользователе
+	var user models.User
+	userResult := h.DB.Where("user_id = ?", review.UserID).First(&user)
+	if userResult.Error != nil {
+		// Если пользователь не найден, оставляем только user_id
+		c.JSON(http.StatusOK, gin.H{
+			"review_id":  review.ReviewID,
+			"product_id": review.ProductID,
+			"user_id":    review.UserID,
+			"username":   "", // Пустое имя, если пользователь не найден
+			"rating":     review.Rating,
+			"comment":    review.Comment,
+			"created_at": review.CreatedAt,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"review_id":  review.ReviewID,
+		"product_id": review.ProductID,
+		"user_id":    review.UserID,
+		"username":   user.Username,
+		"rating":     review.Rating,
+		"comment":    review.Comment,
+		"created_at": review.CreatedAt,
+	})
 }
 
 // GetAllReviews godoc
@@ -124,8 +160,31 @@ func (h *ReviewHandler) GetAllReviews(c *gin.Context) {
 		return
 	}
 
+	// Формируем ответ с информацией о пользователях
+	reviewsWithUsernames := make([]map[string]interface{}, 0, len(reviews))
+	for _, review := range reviews {
+		var user models.User
+		userResult := h.DB.Where("user_id = ?", review.UserID).First(&user)
+
+		reviewData := map[string]interface{}{
+			"review_id":  review.ReviewID,
+			"product_id": review.ProductID,
+			"user_id":    review.UserID,
+			"username":   "", // По умолчанию пустое имя
+			"rating":     review.Rating,
+			"comment":    review.Comment,
+			"created_at": review.CreatedAt,
+		}
+
+		if userResult.Error == nil {
+			reviewData["username"] = user.Username
+		}
+
+		reviewsWithUsernames = append(reviewsWithUsernames, reviewData)
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"data":  reviews,
+		"data":  reviewsWithUsernames,
 		"page":  page,
 		"limit": limit,
 		"total": total,
@@ -166,10 +225,27 @@ func (h *ReviewHandler) UpdateReview(c *gin.Context) {
 		return
 	}
 
+	// Если указан новый пользователь, проверяем его существование
+	if updateData.UserID != 0 && updateData.UserID != existingReview.UserID {
+		var user models.User
+		if result := h.DB.Where("user_id = ?", updateData.UserID).First(&user); result.Error != nil {
+			if result.Error == gorm.ErrRecordNotFound {
+				c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error checking user existence"})
+			}
+			return
+		}
+
+		// Обновляем поле UserID
+		existingReview.UserID = updateData.UserID
+	}
+
 	// Обновляем только разрешенные поля
 	h.DB.Model(&existingReview).Updates(models.Review{
 		Rating:  updateData.Rating,
 		Comment: updateData.Comment,
+		UserID:  existingReview.UserID,
 	})
 
 	// Получаем обновленный отзыв

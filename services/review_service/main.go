@@ -71,7 +71,6 @@ func main() {
 	// Инициализируем обработчики с доступом к БД и Kafka
 	log.Println("Инициализация обработчиков HTTP...")
 	reviewHandler := handlers.NewReviewHandler(db, producer)
-	userHandler := handlers.NewUserHandler(db)
 
 	router := gin.Default()
 
@@ -83,9 +82,6 @@ func main() {
 	router.DELETE("/reviews/:id", reviewHandler.DeleteReview)
 
 	// User routes - новые эндпоинты
-	router.GET("/users/:id", userHandler.GetUserByID)
-	router.GET("/users/:id/username", userHandler.GetUserUsername)
-
 	// Swagger документация
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
