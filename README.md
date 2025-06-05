@@ -6,10 +6,10 @@
 # Участники
 
 М8О-308Б-22
-[Караев Тариель](https://github.com/SempaiTakoo)
-[Халимов Исмаил](https://github.com/IsmailKhalimov)
-[Кочкожаров Иван](https://github.com/kochkozharov)
-[Галкин Алексей](https://github.com/KaiserRed)
+- [Караев Тариель](https://github.com/SempaiTakoo)
+- [Халимов Исмаил](https://github.com/IsmailKhalimov)
+- [Кочкожаров Иван](https://github.com/kochkozharov)
+- [Галкин Алексей](https://github.com/KaiserRed)
 
 # Архитектура приложения
 
