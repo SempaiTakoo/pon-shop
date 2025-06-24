@@ -15,12 +15,11 @@ class Settings(BaseSettings):
         extra="allow"
     )
 
+    @property
+    def database_url_psycopg(self) -> str:
+        return (
+            f"postgresql+psycopg://{self.DB_USER}:{self.DB_PASS}"
+            f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        )
+    
 settings = Settings()
-
-
-SQLALCHEMY_DATABASE_URL = (
-    f"postgresql://{settings.DB_USER}:{settings.DB_PASS}"
-    f"@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
-)
-
-

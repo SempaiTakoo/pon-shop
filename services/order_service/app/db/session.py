@@ -1,10 +1,8 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
-from app.core.config import settings, SQLALCHEMY_DATABASE_URL
+from sqlalchemy.orm import sessionmaker
+from app.core.config import settings
 
-Base = declarative_base()
-
-engine = create_engine(SQLALCHEMY_DATABASE_URL, echo=True, pool_size=5, max_overflow=10)
+engine = create_engine(settings.database_url_psycopg, echo=True, pool_size=5, max_overflow=10)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():

@@ -3,14 +3,16 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
 from sqlalchemy import ForeignKey, BigInteger, Integer, DateTime, DECIMAL, Text, String, Enum as SQLEnum
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 from sqlalchemy.sql import func
-from app.db.session import Base
 
 class OrderStatusEnum(str, Enum):
     pending = "pending"
     paid = "paid"
     shipped = "shipped"
+
+class Base(DeclarativeBase):
+    pass
 
 class Order(Base):
     __tablename__ = "orders"
